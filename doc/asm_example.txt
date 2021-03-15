@@ -1,0 +1,38 @@
+class C1 {
+public:
+	C1(int a) {
+00007FF7A8E81760  mov         dword ptr [rsp+10h],edx  
+00007FF7A8E81764  mov         qword ptr [rsp+8],rcx  
+00007FF7A8E81769  push        rbp  
+00007FF7A8E8176A  push        rdi  
+00007FF7A8E8176B  sub         rsp,0E8h  
+00007FF7A8E81772  lea         rbp,[rsp+20h]  
+00007FF7A8E81777  mov         rdi,rsp  
+00007FF7A8E8177A  mov         ecx,3Ah  
+00007FF7A8E8177F  mov         eax,0CCCCCCCCh  
+00007FF7A8E81784  rep stos    dword ptr [rdi]  
+00007FF7A8E81786  mov         rcx,qword ptr [rsp+108h]  
+00007FF7A8E8178E  lea         rcx,[__14BC4759_main@cpp (07FF7A8E91000h)]  
+00007FF7A8E81795  call        __CheckForDebuggerJustMyCode (07FF7A8E8134Dh)  
+		this->a = a;
+00007FF7A8E8179A  mov         rax,qword ptr [this]  
+00007FF7A8E817A1  mov         ecx,dword ptr [a]  
+00007FF7A8E817A7  mov         dword ptr [rax],ecx  
+	}
+
+
+--------------------------------------
+		C1 c1(5);
+00007FF7A8E8181B  mov         edx,5  
+00007FF7A8E81820  lea         rcx,[c1]  
+00007FF7A8E81824  call        C1::C1 (07FF7A8E811BDh) 
+    return 0;
+00007FF7A8E81829  xor         eax,eax 
+
+
+
+-----------------------------------------
+C1::C1:
+00007FF7A8E811BD  jmp         C1::C1 (07FF7A8E81760h) 
+
+memory rsp+8 00 10 e9 a8 f7 7f 00 00
