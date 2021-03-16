@@ -21,8 +21,13 @@ public:
 			uintptr_t return_dist_instruction_address = (uintptr_t)*((void**)stack_pos_return);
 			uintptr_t call_instruction_address = return_dist_instruction_address - sizeof(callInstruction_format);
 			uintptr_t call_instruction = *((uintptr_t*)call_instruction_address) & 0xFF'FF'FF'FF'FF;
-			uintptr_t call_offset_address = call_instruction >>8;
-			constructor_address = (void*)(return_dist_instruction_address + call_offset_address);
+			if((call_instruction&0xFF) == callInstruction_format[0]){
+				uintptr_t call_offset_address = call_instruction >>8;
+				constructor_address = (void*)(return_dist_instruction_address + call_offset_address);
+			}else{
+				printf("call not use a relative address\n");
+			}
+			
 		}
 		
 		this->a = a;
