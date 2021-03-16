@@ -1,15 +1,16 @@
 #include <cstdlib>
 #include <cstdint>
 #include <cstdio>
+#include <cstring>
 
 constexpr uint8_t callInstruction_format[] = {0xe8, 0x29, 00, 00, 00};
-void* constructor_address = nullptr;
 
 
 class CC {
 public:
-	CC(int a) {
-		if(!constructor_address){
+	inline static void* constructor = nullptr;
+	CC(int num) {
+		if(!constructor){
 			void* rbp_value;
 			__asm__(
 				"mov %%rbp, %%rax":"=a"(rbp_value)
@@ -22,43 +23,49 @@ public:
 			uintptr_t call_instruction_address = return_dist_instruction_address - sizeof(callInstruction_format);
 			uintptr_t call_instruction = *((uintptr_t*)call_instruction_address) & 0xFF'FF'FF'FF'FF;
 			if((call_instruction&0xFF) == callInstruction_format[0]){
-				uintptr_t call_offset_address = call_instruction >>8;
-				constructor_address = (void*)(return_dist_instruction_address + call_offset_address);
+				int32_t call_offset_address;
+				memcpy((void*)&call_offset_address, (void*)((uint8_t*)&call_instruction + 1), sizeof(int32_t));
+				constructor = (void*)(return_dist_instruction_address + call_offset_address);
 			}else{
 				printf("call not use a relative address\n");
 			}
 			
 		}
 		
-		this->a = a;
+		this->num = num;
+	}
+
+	static void init(){
+		CC c(0);
 	}
 
 	void log(){
-		printf("this->a is %d\n", this->a);
+		printf("this->a is %d\n", this->num);
 	}
 
 	
 
 private:
 
-	int a;
+	int num;
 };
 
 typedef CC* (*CC_Constructor)(CC* cc, int num);
 
+
 int main(){
-    CC* c1 = new CC(5);
+
+	CC::init();
+	//CC* c1 = new CC(5);
 
     CC* c2 = (CC*)malloc(sizeof(CC));
 
-	if(constructor_address){
-			CC_Constructor cc_constructor = (CC_Constructor)constructor_address;
+	if(CC::constructor){
+			CC_Constructor cc_constructor = (CC_Constructor)CC::constructor;
 
 			cc_constructor(c2, 10);
 	}
 
-
-	c1->log();
 	c2->log();
 
     return 0;
