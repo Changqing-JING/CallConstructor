@@ -4,4 +4,4 @@ project(callConstructor)
 
 aux_source_directory(./src sourceFiles)
 
-add_executable(${PROJECT_NAME ${sourceFiles})
+add_executable(${PROJECT_NAME} ${sourceFiles})
