@@ -8,7 +8,8 @@ constexpr uint8_t callInstruction_format[] = {0xe8, 0x29, 00, 00, 00};
 
 class CC {
 public:
-	inline static void* constructor = nullptr;
+	typedef CC* (*Constructor)(CC* cc, int num);
+	inline static Constructor constructor = nullptr;
 	CC(int num) {
 		if(!constructor){
 			void* rbp_value;
@@ -25,7 +26,7 @@ public:
 			if((call_instruction&0xFF) == callInstruction_format[0]){
 				int32_t call_offset_address;
 				memcpy((void*)&call_offset_address, (void*)((uint8_t*)&call_instruction + 1), sizeof(int32_t));
-				constructor = (void*)(return_dist_instruction_address + call_offset_address);
+				constructor = (Constructor)(return_dist_instruction_address + call_offset_address);
 			}else{
 				printf("call not use a relative address\n");
 			}
@@ -50,7 +51,7 @@ private:
 	int num;
 };
 
-typedef CC* (*CC_Constructor)(CC* cc, int num);
+
 
 
 int main(){
@@ -61,9 +62,8 @@ int main(){
     CC* c2 = (CC*)malloc(sizeof(CC));
 
 	if(CC::constructor){
-			CC_Constructor cc_constructor = (CC_Constructor)CC::constructor;
+			CC::constructor(c2, 10);
 
-			cc_constructor(c2, 10);
 	}
 
 	c2->log();
